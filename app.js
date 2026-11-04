@@ -43,7 +43,7 @@
   function back() {
     if (state.stack.length > 1) state.stack.pop();
     let prev = state.stack[state.stack.length - 1];
-    if (prev === "s-cast" || prev === "s-thinking") { state.stack.pop(); prev = state.stack[state.stack.length - 1] || "s-home"; }
+    if (prev === "s-thinking") { state.stack.pop(); prev = state.stack[state.stack.length - 1] || "s-home"; }
     go(prev, false);
   }
 
@@ -105,45 +105,23 @@
 
   const repeatKey = () => [today(), state.category, E.normalizeQuestion(state.question)].join("|");
 
-  /* ---------- бросок без анимации ---------- */
+  const LS_DOB = "iching.dob";
+
   function startCast() {
     state.question = $("#q").value.trim();
-    const key = repeatKey();
-    const prev = loadHist().find(h => h.key === key);
+    state.dob = $("#dob").value || "";
+    if (state.dob) localStorage.setItem(LS_DOB, state.dob); else localStorage.removeItem(LS_DOB);
+    const prev = loadHist().find(h => h.key === repeatKey());
     if (prev) { showResult(E.cast({ lines: prev.lines }), { repeat: prev }); return; }
-    state.lines = [];
-    $("#building").innerHTML = ""; $("#cast-sum").innerHTML = "&nbsp;";
-    $("#cast-title").textContent = "Линия 1 из 6";
-    $("#btn-throw").disabled = false;
-    go("s-cast");
+    state.lines = Array.from({ length: 6 }, () => E.castLine());
+    finish();
   }
-
-  /* Монеты бросаются мгновенно, без подброса — просто показываем результат. */
-  function throwOnce() {
-    if (state.lines.length >= 6) return;
-    const line = E.castLine();
-    line.coins.forEach((v, i) => document.querySelectorAll(".coin")[i].classList.toggle("tails", v === 2));
-    state.lines.push(line);
-    const names = { 6: "старая инь — меняется", 7: "молодой ян", 8: "молодая инь", 9: "старый ян — меняется" };
-    $("#cast-sum").textContent = `${line.coins.join(" + ")} = ${line.sum} · ${names[line.sum]}`;
-    $("#building").insertAdjacentHTML("beforeend", `<div class="ln ${line.yang ? "yang" : "yin"} ${line.moving ? "mv" : ""}"></div>`);
-    buzz(12);
-    const n = state.lines.length;
-    if (n < 6) { $("#cast-title").textContent = `Линия ${n + 1} из 6`; }
-    else {
-      $("#cast-title").textContent = "Все шесть линий";
-      $("#btn-throw").disabled = true;
-      buzz([20, 40, 20]);
-      setTimeout(finish, 500);
-    }
-  }
-  function throwAll() { while (state.lines.length < 6) throwOnce(); }
 
   function finish() {
     const r = E.cast({ lines: state.lines });
     const hist = loadHist();
     hist.unshift({ key: repeatKey(), date: today(), ts: Date.now(), category: state.category, question: state.question,
-      lines: state.lines, primary: r.primary.n, changed: r.changed ? r.changed.n : null });
+      dob: state.dob, lines: state.lines, primary: r.primary.n, changed: r.changed ? r.changed.n : null });
     saveHist(hist);
     showThinking(() => showResult(r));
   }
@@ -216,7 +194,7 @@
     const body = o.paragraphs.map(par => `<p>${par}</p>`).join("");
 
     let html = "";
-    if (opt.repeat) html += `<div class="repeat">Вы уже задавали этот вопрос сегодня. Один вопрос — один бросок, вот ваш ответ.</div>`;
+    if (opt.repeat) html += `<div class="repeat">Вы уже задавали этот вопрос сегодня. Один вопрос — один ответ, вот он.</div>`;
 
     html += `<div class="res-head">
       ${state.question ? `<div class="res-q">«${esc(state.question)}»${cat ? " · " + cat.label : ""}</div>` : cat ? `<div class="res-q">${cat.label}</div>` : ""}
@@ -269,11 +247,10 @@
   }
 
   $("#btn-start").onclick = () => { state.category = null; $("#q").value = ""; $("#coach").hidden = true;
+    $("#dob").max = today(); $("#dob").value = localStorage.getItem(LS_DOB) || "";
     document.querySelectorAll(".chip").forEach(x => x.classList.remove("on")); $("#btn-to-cast").disabled = true; go("s-ask"); };
   $("#q").addEventListener("input", coach);
   $("#btn-to-cast").onclick = startCast;
-  $("#btn-throw").onclick = () => throwOnce();
-  $("#btn-auto").onclick = throwAll;
   $("#btn-new").onclick = () => $("#btn-start").onclick();
   $("#btn-share").onclick = share;
   $("#btn-back").onclick = back;

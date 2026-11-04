@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>И-Цзин · Книга перемен</title>
-<meta name="description" content="Гадание по Книге перемен: бросок монет, гексаграмма и толкование под ваш вопрос.">
+<meta name="description" content="Гадание по Книге перемен: гексаграмма и толкование под ваш вопрос.">
 <meta name="theme-color" content="#14110f">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -37,7 +37,7 @@
     </div>
 
     <h1 class="lead">Задайте вопрос<br>Книге перемен</h1>
-    <p class="sub">Сформулируйте, что вас волнует, и бросьте монеты шесть раз.</p>
+    <p class="sub">Сформулируйте, что вас волнует, и получите ответ Книги перемен.</p>
     <button class="btn primary big" id="btn-start">Задать вопрос</button>
 
     <div class="install" id="install-tip" hidden>
@@ -48,7 +48,6 @@
   </section>
 
   <section class="screen" id="s-ask">
-    <div class="step">Шаг 1 из 2</div>
     <h2>О чём вопрос?</h2>
     <div class="chips" id="chips"></div>
 
@@ -58,25 +57,14 @@
     </label>
     <div class="coach" id="coach" hidden></div>
 
-    <button class="btn primary big" id="btn-to-cast" disabled>Перейти к броску</button>
-    <p class="fine">Один вопрос — один бросок. Повторный тот же вопрос в тот же день вернёт тот же ответ.</p>
+    <label class="field">
+      <span>Дата рождения <i>(необязательно, хранится только на вашем устройстве)</i></span>
+      <input type="date" id="dob" min="1900-01-01">
+    </label>
+
+    <button class="btn primary big" id="btn-to-cast" disabled>Получить предсказание</button>
+    <p class="fine">Один вопрос — один ответ. Повторный тот же вопрос в тот же день вернёт тот же ответ.</p>
   </section>
-
-  <section class="screen" id="s-cast">
-    <div class="step">Шаг 2 из 2</div>
-    <h2 id="cast-title">Линия 1 из 6</h2>
-    <p class="sub center">Сосредоточьтесь на вопросе и коснитесь монет.</p>
-
-    <div class="coins" id="coins">
-      <div class="coin"><i></i></div><div class="coin"><i></i></div><div class="coin"><i></i></div>
-    </div>
-    <div class="cast-sum" id="cast-sum">&nbsp;</div>
-    <div class="building" id="building"></div>
-
-    <button class="btn primary big" id="btn-throw">Бросить монеты</button>
-    <button class="link small" id="btn-auto">Бросить все шесть сразу</button>
-  </section>
-
 
   <section class="screen" id="s-thinking">
     <div class="think-wrap">
@@ -106,7 +94,7 @@
   <section class="screen" id="s-method">
     <h2>Как мы читаем</h2>
     <div class="prose">
-      <p><b>Бросок.</b> Три монеты, шесть раз, снизу вверх. Орёл = 3, решка = 2. Сумма 6 — старая инь (меняется), 7 — молодой ян, 8 — молодая инь, 9 — старый ян (меняется).</p>
+      <p><b>Линии.</b> Гексаграмма складывается из шести линий снизу вверх. Каждая определяется как при броске трёх монет: сумма 6 — старая инь (меняется), 7 — молодой ян, 8 — молодая инь, 9 — старый ян (меняется). Выбор случайный, но вероятности те же, что у реального броска.</p>
       <p><b>Две гексаграммы.</b> Исходная описывает ситуацию сейчас. Меняющиеся линии переворачиваются — получается вторая, куда ситуация движется.</p>
       <p><b>Что читается</b> (по Чжу Си):</p>
       <ul>
