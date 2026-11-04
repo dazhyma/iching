@@ -286,11 +286,11 @@ const HEX = [
 ];
 
 const CATEGORIES = [
-  { id: "love",  label: "Отношения",  icon: "❤️" },
-  { id: "work",  label: "Работа",     icon: "💼" },
-  { id: "money", label: "Деньги",     icon: "💰" },
-  { id: "act",   label: "Делать или нет", icon: "🎯" },
-  { id: "general", label: "Общее",    icon: "🧭" }
+  { id: "love",  label: "Отношения" },
+  { id: "work",  label: "Работа" },
+  { id: "money", label: "Деньги" },
+  { id: "act",   label: "Делать или нет" },
+  { id: "general", label: "Общее" }
 ];
 
 /* Категорийный слой: 5 категорий × 3 направления */

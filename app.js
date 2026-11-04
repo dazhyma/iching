@@ -57,7 +57,7 @@
   }
 
   function renderChips() {
-    $("#chips").innerHTML = CATEGORIES.map(c => `<button class="chip" data-id="${c.id}"><span>${c.icon}</span>${c.label}</button>`).join("");
+    $("#chips").innerHTML = CATEGORIES.map((c, i) => `<button class="chip" data-id="${c.id}"><i>${String(i + 1).padStart(2, "0")}</i>${c.label}</button>`).join("");
     $("#chips").onclick = e => {
       const b = e.target.closest(".chip"); if (!b) return;
       state.category = b.dataset.id;

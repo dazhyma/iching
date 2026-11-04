@@ -13,5 +13,7 @@ echo "→ загрузка на $USER_SSH@$HOST:$DEST"
 ssh "$USER_SSH@$HOST" "mkdir -p $DEST/icons"
 for f in $FILES; do scp -q "$f" "$USER_SSH@$HOST:$DEST/$f"; done
 scp -q icons/* "$USER_SSH@$HOST:$DEST/icons/"
+ssh "$USER_SSH@$HOST" "mkdir -p $DEST/fonts"
+scp -q fonts/* "$USER_SSH@$HOST:$DEST/fonts/"
 ssh "$USER_SSH@$HOST" "chown -R caddy:caddy $DEST && chmod -R a+rX $DEST"
 echo "✓ загружено. Поднимите версию кэша в sw.js при правках фронтенда."

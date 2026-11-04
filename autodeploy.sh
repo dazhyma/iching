@@ -40,6 +40,8 @@ for f in index.html app.css app.js engine.js data.js manifest.webmanifest sw.js;
   install -m 644 -o caddy -g caddy "$SRC/$f" "$DEST/$f"
 done
 cp -f "$SRC"/icons/* "$DEST/icons/"
+install -d -o caddy -g caddy "$DEST/fonts"
+cp -f "$SRC"/fonts/* "$DEST/fonts/"
 chown -R caddy:caddy "$DEST"
 chmod -R a+rX "$DEST"
 echo "[$(date -Is)] задеплоено ${REMOTE:0:7}"
