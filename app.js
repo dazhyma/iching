@@ -172,17 +172,18 @@
     const words = countWords(state.question);
     const total = DELAY.enabled ? delayMs(words) : 600;
 
-    $("#think-hex").innerHTML = "";
     $("#think-phrase").textContent = PHRASES[0];
+    $("#think-phrase").style.opacity = 1;
     $("#think-fill").style.width = "0%";
     $("#think-bar").hidden = !DELAY.enabled;
     go("s-thinking");
 
-    // фразы меняются, но не чаще раза в 2.2 с и не в конце
+    // фразы идут по списку вперёд и останавливаются на последней — назад не листаем
     let idx = 0;
     clearInterval(phraseTimer);
     phraseTimer = setInterval(() => {
-      idx = (idx + 1) % PHRASES.length;
+      if (idx >= PHRASES.length - 1) { clearInterval(phraseTimer); return; }
+      idx++;
       const el = $("#think-phrase");
       el.style.opacity = 0;
       setTimeout(() => { el.textContent = PHRASES[idx]; el.style.opacity = 1; }, 260);
