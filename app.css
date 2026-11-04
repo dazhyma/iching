@@ -1,0 +1,130 @@
+:root{
+  --bg:#14110f; --bg2:#1d1916; --card:#241f1b; --line:#3a322b;
+  --ink:#f1e9dd; --mute:#a99c8b; --gold:#d6a85b; --gold2:#f0c97f;
+  --red:#c8553d; --green:#7fae73; --amber:#d9a441;
+  --safe-t:env(safe-area-inset-top); --safe-b:env(safe-area-inset-bottom);
+  --r:18px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+#app{max-width:480px;margin:0 auto;min-height:100dvh;
+  padding:calc(var(--safe-t) + 8px) 20px calc(var(--safe-b) + 24px);
+  background:radial-gradient(120% 60% at 50% -10%,#2b221a 0%,var(--bg) 60%)}
+.top{display:flex;align-items:center;justify-content:space-between;height:48px;position:sticky;top:0;z-index:5;
+  background:linear-gradient(var(--bg) 70%,transparent);margin:0 -20px;padding:0 12px}
+.brand{font-family:"Songti SC","STSong",serif;font-size:22px;color:var(--gold);cursor:pointer}
+.brand span{font:500 14px/1 -apple-system,sans-serif;color:var(--mute);margin-left:6px;letter-spacing:.3px}
+.icon-btn{width:44px;height:44px;border:0;background:none;color:var(--ink);font-size:26px;border-radius:12px}
+.icon-btn:active{background:var(--card)}
+
+.screen{display:none;animation:in .28s ease}
+.screen.active{display:block}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+h1.lead{font:600 30px/1.15 "Songti SC","Georgia",serif;margin:28px 0 8px}
+h2{font:600 24px/1.2 "Songti SC","Georgia",serif;margin:8px 0 16px}
+.sub{color:var(--mute);margin:0 0 22px}
+.center{text-align:center}
+.step{color:var(--gold);font-size:13px;letter-spacing:.8px;text-transform:uppercase;margin-top:8px}
+.eyebrow{color:var(--gold);font-size:12px;letter-spacing:.8px;text-transform:uppercase}
+.fine{color:var(--mute);font-size:13px;margin:14px 0 0}
+
+.btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);
+  font:600 16px/1 inherit;padding:16px 18px;border-radius:14px;width:100%;transition:transform .08s}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:linear-gradient(180deg,var(--gold2),var(--gold));color:#21180c;border:0}
+.btn.big{min-height:56px;font-size:17px}
+.btn:disabled{opacity:.4}
+.link{background:none;border:0;color:var(--gold);font:inherit;padding:12px 0;display:block;margin:6px auto 0}
+.link.small{font-size:14px}
+.link.danger{color:var(--red)}
+
+.day-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-top:8px;cursor:pointer}
+.day-row{display:flex;gap:16px;align-items:center;margin:10px 0 8px}
+.day-name{font:600 19px/1.2 "Songti SC","Georgia",serif}
+.day-essence{color:var(--mute);font-size:14px;margin-top:4px}
+.hint{font-size:12px;color:var(--mute);border-top:1px solid var(--line);padding-top:8px}
+
+.hex{display:flex;flex-direction:column-reverse;gap:7px;width:120px}
+.hex-mini{display:flex;flex-direction:column-reverse;gap:4px;width:52px;flex:none}
+.ln{height:12px;position:relative;display:flex;justify-content:space-between}
+.hex-mini .ln{height:6px}
+.ln::before,.ln::after{content:"";background:var(--ink);border-radius:2px;height:100%}
+.ln.yang::before{width:100%}.ln.yang::after{display:none}
+.ln.yin::before,.ln.yin::after{width:42%}
+.ln.mv::before,.ln.mv::after{background:var(--gold)}
+.ln.hl{outline:2px solid var(--gold);outline-offset:4px;border-radius:3px}
+.ln .mk{position:absolute;right:-22px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:12px}
+.hex-mini .ln .mk{display:none}
+
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;
+  padding:14px 12px;font:500 15px/1.2 inherit;text-align:left;display:flex;gap:8px;align-items:center;min-height:52px}
+.chip.on{border-color:var(--gold);background:#33281c}
+.chip:last-child:nth-child(odd){grid-column:span 2}
+.field{display:block;margin-bottom:12px}
+.field span{display:block;font-size:14px;color:var(--mute);margin-bottom:6px}
+.field i{font-style:normal;opacity:.7}
+textarea{width:100%;background:var(--bg2);color:var(--ink);border:1px solid var(--line);border-radius:14px;
+  padding:14px;font:16px/1.4 inherit;resize:none}
+textarea:focus{outline:none;border-color:var(--gold)}
+.coach{background:#2a2219;border-left:3px solid var(--gold);border-radius:10px;padding:12px 14px;font-size:14px;margin-bottom:16px}
+.coach b{color:var(--gold2)}
+.coach button{margin:8px 0 0;padding:0;font-size:14px}
+
+.coins{display:flex;justify-content:center;gap:16px;margin:28px 0 8px;perspective:600px}
+.coin{width:76px;height:76px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#f6d48f,#b98634 70%,#7b5521);
+  box-shadow:0 6px 18px #0008,inset 0 0 0 4px #0002;display:grid;place-items:center;transform-style:preserve-3d}
+.coin i{width:20px;height:20px;border:3px solid #5a3d16;border-radius:3px;opacity:.8}
+.coin.tails{background:radial-gradient(circle at 35% 30%,#d8cfc2,#8d8478 70%,#55504a)}
+.coin.tails i{border-color:#3d3833}
+.coin.spin{animation:spin .7s cubic-bezier(.3,.6,.4,1)}
+@keyframes spin{0%{transform:rotateX(0) translateY(0)}45%{transform:rotateX(900deg) translateY(-60px)}100%{transform:rotateX(1800deg) translateY(0)}}
+.cast-sum{text-align:center;color:var(--gold);min-height:24px;font-size:15px;margin-bottom:12px}
+.building{display:flex;flex-direction:column-reverse;gap:8px;width:150px;margin:0 auto 24px;min-height:136px;justify-content:flex-start}
+.building .ln{animation:in .3s ease}
+
+.res-head{text-align:center;padding:12px 0 4px}
+.res-q{color:var(--mute);font-size:14px;font-style:italic;margin-bottom:16px}
+.pair{display:flex;justify-content:center;align-items:center;gap:26px;margin:8px 0 14px}
+.pair .arrow{color:var(--gold);font-size:22px}
+.pair .col{display:flex;flex-direction:column;align-items:center;gap:8px}
+.pair .cap{font-size:12px;color:var(--mute)}
+.res-num{color:var(--gold);font-size:13px;letter-spacing:.6px}
+.res-name{font:600 28px/1.15 "Songti SC","Georgia",serif;margin:4px 0}
+.res-cn{font-family:"Songti SC","STSong",serif;color:var(--mute)}
+.res-image{font-style:italic;color:var(--gold2);margin:8px 0 0}
+.badge{display:inline-block;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600;margin-top:12px}
+.v-f{background:#22311f;color:var(--green)}.v-m{background:#352a17;color:var(--amber)}.v-c{background:#3a1f19;color:#e8846d}
+.block{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-top:12px}
+.block h3{margin:0 0 6px;font-size:13px;letter-spacing:.8px;text-transform:uppercase;color:var(--gold)}
+.block p{margin:0}
+.block.main{border-color:var(--gold)}
+.block .tag{font-size:11px;color:var(--gold);border:1px solid var(--gold);border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:1px}
+.rule{font-size:13px;color:var(--mute);text-align:center;margin:14px 0 0}
+.actions{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;margin-top:20px}
+.disclaimer{font-size:12px;color:var(--mute);text-align:center;margin-top:16px}
+.repeat{background:#2a2219;border-radius:10px;padding:10px 12px;font-size:13px;color:var(--gold2);margin-bottom:8px}
+
+.h-item{display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);
+  border-radius:14px;padding:12px;margin-bottom:10px;width:100%;color:var(--ink);text-align:left;font:inherit}
+.h-item .hex-mini{width:36px}
+.h-item .hex-mini .ln{height:4px}
+.h-meta{font-size:12px;color:var(--mute)}
+.h-title{font-weight:600}
+.h-q{font-size:14px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical}
+.empty{color:var(--mute);text-align:center;padding:40px 0}
+
+.prose p,.prose li{color:#ddd3c4;font-size:15px}
+.prose ul{padding-left:20px}
+.install{background:var(--card);border:1px dashed var(--gold);border-radius:14px;padding:14px;font-size:14px;margin-top:20px}
+.share-ic{display:inline-block;transform:rotate(-90deg)}
+.toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 24px);transform:translate(-50%,20px);opacity:0;
+  background:#000c;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;transition:.25s;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (min-width:700px){ body{background:#0c0a09} }
+@media (prefers-reduced-motion:reduce){ .coin.spin{animation:none} .screen{animation:none} }

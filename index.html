@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>И-Цзин · Книга перемен</title>
+<meta name="description" content="Гадание по Книге перемен: бросок монет, гексаграмма и толкование под ваш вопрос.">
+<meta name="theme-color" content="#14110f">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="И-Цзин">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <button class="icon-btn" id="btn-back" aria-label="Назад" hidden>‹</button>
+    <div class="brand">易 <span>Книга перемен</span></div>
+    <button class="icon-btn" id="btn-history" aria-label="История">☰</button>
+  </header>
+
+  <section class="screen active" id="s-home">
+    <div class="day-card" id="day-card">
+      <div class="eyebrow">Гексаграмма дня · <span id="day-date"></span></div>
+      <div class="day-row">
+        <div class="hex-mini" id="day-hex"></div>
+        <div>
+          <div class="day-name" id="day-name"></div>
+          <div class="day-essence" id="day-essence"></div>
+        </div>
+      </div>
+      <div class="hint">Одна на всех сегодня. Для личного ответа задайте вопрос.</div>
+    </div>
+
+    <h1 class="lead">Задайте вопрос<br>Книге перемен</h1>
+    <p class="sub">Сформулируйте, что вас волнует, и бросьте монеты шесть раз.</p>
+    <button class="btn primary big" id="btn-start">Задать вопрос</button>
+
+    <div class="install" id="install-tip" hidden>
+      <b>Установите на телефон.</b> В Safari нажмите <span class="share-ic">⎋</span> «Поделиться» → «На экран Домой».
+      <button class="link" id="install-close">Понятно</button>
+    </div>
+    <button class="link small" id="btn-method">Как мы читаем гексаграммы</button>
+  </section>
+
+  <section class="screen" id="s-ask">
+    <div class="step">Шаг 1 из 2</div>
+    <h2>О чём вопрос?</h2>
+    <div class="chips" id="chips"></div>
+
+    <label class="field">
+      <span>Ваш вопрос <i>(необязательно, но лучше точно)</i></span>
+      <textarea id="q" rows="3" maxlength="200" placeholder="Например: что определит доход моего магазина на этой неделе?"></textarea>
+    </label>
+    <div class="coach" id="coach" hidden></div>
+
+    <button class="btn primary big" id="btn-to-cast" disabled>Перейти к броску</button>
+    <p class="fine">Один вопрос — один бросок. Повторный тот же вопрос в тот же день вернёт тот же ответ.</p>
+  </section>
+
+  <section class="screen" id="s-cast">
+    <div class="step">Шаг 2 из 2</div>
+    <h2 id="cast-title">Бросок 1 из 6</h2>
+    <p class="sub center">Сосредоточьтесь на вопросе и коснитесь монет.</p>
+
+    <div class="coins" id="coins">
+      <div class="coin"><i></i></div><div class="coin"><i></i></div><div class="coin"><i></i></div>
+    </div>
+    <div class="cast-sum" id="cast-sum">&nbsp;</div>
+    <div class="building" id="building"></div>
+
+    <button class="btn primary big" id="btn-throw">Бросить монеты</button>
+    <button class="link small" id="btn-auto">Бросить все шесть сразу</button>
+  </section>
+
+  <section class="screen" id="s-result">
+    <div id="result"></div>
+    <div class="actions">
+      <button class="btn" id="btn-share">Поделиться</button>
+      <button class="btn primary" id="btn-new">Новый вопрос</button>
+    </div>
+    <p class="disclaimer">Развлекательный сервис. Не является медицинской, психологической, финансовой или юридической рекомендацией. Решения вы принимаете сами.</p>
+  </section>
+
+  <section class="screen" id="s-history">
+    <h2>Ваши вопросы</h2>
+    <div id="history-list"></div>
+    <button class="link small danger" id="btn-clear">Очистить историю</button>
+    <p class="fine">История хранится только на этом устройстве и никуда не отправляется.</p>
+  </section>
+
+  <section class="screen" id="s-method">
+    <h2>Как мы читаем</h2>
+    <div class="prose">
+      <p><b>Бросок.</b> Три монеты, шесть раз, снизу вверх. Орёл = 3, решка = 2. Сумма 6 — старая инь (меняется), 7 — молодой ян, 8 — молодая инь, 9 — старый ян (меняется).</p>
+      <p><b>Две гексаграммы.</b> Исходная описывает ситуацию сейчас. Меняющиеся линии переворачиваются — получается вторая, куда ситуация движется.</p>
+      <p><b>Что читается</b> (по Чжу Си):</p>
+      <ul>
+        <li>0 меняющихся — суть исходной гексаграммы</li>
+        <li>1 — текст этой линии</li>
+        <li>2 — обе линии, верхняя главная</li>
+        <li>3 — обе гексаграммы, исходная главная</li>
+        <li>4 — две неподвижные линии второй, нижняя главная</li>
+        <li>5 — единственная неподвижная линия второй</li>
+        <li>6 — суть второй гексаграммы</li>
+      </ul>
+      <p><b>Почему не «да/нет».</b> Книга перемен описывает, как устроен момент и куда он движется, а не выдаёт приговор. Лучшие вопросы — «что поможет…», «как мне действовать в…».</p>
+      <p><b>Конфиденциальность.</b> Вопросы и история хранятся только на вашем устройстве.</p>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+<script src="data.js"></script>
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
