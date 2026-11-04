@@ -1,5 +1,5 @@
-const CACHE = "iching-v7";
-const ASSETS = ["./", "fonts/Postertoastermono.ttf", "fonts/Manrope.ttf", "index.html", "app.css", "app.js", "engine.js", "data.js", "manifest.webmanifest",
+const CACHE = "iching-v8";
+const ASSETS = ["./", "fonts/Jura.ttf", "fonts/Manrope.ttf", "index.html", "app.css", "app.js", "engine.js", "data.js", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS))); self.skipWaiting(); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k))))); self.clients.claim(); });
