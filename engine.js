@@ -67,15 +67,31 @@
     return { lines, primary, changed, rule: readingRule(lines) };
   }
 
-  function compose(result, category) {
+  /* Связки: чтобы абзацы читались как речь, а не как список блоков. */
+  const LINK = {
+    line:   ["Смотрите, что говорит ваша линия.", "Ваша линия здесь важнее общего фона.", "Дальше — самое точное место в этом раскладе."],
+    second: ["И вторая линия в той же тональности.", "Вторая линия добавляет оттенок."],
+    dev:    ["Дальше картина меняется.", "Но это только половина."],
+    advice: ["Что с этим делать.", "Отсюда следует практический шаг."],
+    close:  "И самое важное напоследок: Книга перемен описывает конфигурацию момента, а не выносит приговор. Она показывает, где вы стоите и какая сила на вас действует, — а что с этим сделать, решаете вы, и это не формальность, а единственное, что вам действительно подконтрольно."
+  };
+  const pick = (arr, seed) => arr[Math.abs(seed) % arr.length];
+  const lower = s => s ? s.charAt(0).toLowerCase() + s.slice(1) : s;
+
+  /* Сборка в один связный текст. Возвращает абзацы, а не поля-блоки. */
+  function compose(result, category, opts = {}) {
     const { primary, changed, rule } = result;
     const base = (rule.of === "changed" && changed) ? changed : primary;
     const v = base.v;
     const frame = CATEGORY_FRAME[category] || CATEGORY_FRAME.general;
+    const seed = opts.seed || primary.n * 7 + (changed ? changed.n : 0) * 3 + rule.k;
+
     const out = {
       valence: VALENCE[v], essence: base.e, situation: base.t, advice: base.a,
-      category: frame[v], lines: [], development: null, rule: rule.text
+      category: frame[v], lines: [], development: null, rule: rule.text,
+      name: base.ru, num: base.n, paragraphs: []
     };
+
     if (rule.focus === "lines") {
       const src = rule.of === "changed" ? changed : primary;
       out.lines = rule.lines.map(p => ({
@@ -84,9 +100,46 @@
       }));
     }
     if (changed) {
-      out.development = { hex: changed, text: `Ситуация движется к «${changed.ru}»: ${changed.e.toLowerCase()} ${changed.t}` };
+      out.development = {
+        hex: changed,
+        text: `Ситуация не стоит на месте: она движется к гексаграмме «${changed.ru}». ${changed.e} ${changed.t}`
+      };
     }
-    if (rule.of === "both" && changed) out.situation += " Одновременно уже проступает вторая картина — см. «Развитие».";
+
+    /* --- абзацы --- */
+    const P = [];
+
+    // 1. Открытие: что выпало и как это звучит одним движением
+    P.push(`${out.essence} Вам выпала гексаграмма ${out.num}, «${out.name}»${changed ? `, и она переходит в «${changed.ru}»` : ""} — это ответ не про то, что случится само, а про то, как устроен ваш момент и куда он клонится.`);
+
+    // 2. Ситуация
+    P.push(out.situation);
+
+    // 3. Линии — ядро ответа
+    if (rule.focus === "lines" && out.lines.length) {
+      const first = out.lines.find(l => l.main) || out.lines[0];
+      P.push(`${pick(LINK.line, seed)} ${first.text}`);
+      for (const l of out.lines.filter(l => !l.main)) {
+        P.push(`${pick(LINK.second, seed + l.pos)} ${l.text}`);
+      }
+    }
+
+    // 4. Категория: фраза уже имеет собственное подлежащее («В работе…», «По деньгам…»),
+    //    поэтому вставляется отдельным абзацем — иначе получается «По деньгам, в денежных делах».
+    if (category && frame[v]) P.push(frame[v]);
+    else if (frame[v]) P.push(frame[v]);
+
+    // 5. Развитие
+    if (out.development) P.push(`${pick(LINK.dev, seed + 1)} ${out.development.text}`);
+
+    // 6. Совет
+    P.push(`${pick(LINK.advice, seed + 2)} ${out.advice}`);
+
+    // 7. Закрытие: рамка ожиданий, снимает фатализм
+    P.push(LINK.close);
+
+    out.paragraphs = P;
+    out.text = P.join("\n\n");
     return out;
   }
 

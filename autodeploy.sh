@@ -14,7 +14,7 @@ git fetch --quiet origin main
 LOCAL=$(git rev-parse HEAD)
 REMOTE=$(git rev-parse origin/main)
 
-[ "$LOCAL" = "$REMOTE" ] && exit 0
+[ "$LOCAL" = "$REMOTE" ] && [ "${1:-}" != "--force" ] && exit 0
 
 # уже падали на этом коммите — не зацикливаемся
 if [ -f "$FAILMARK" ] && [ "$(cat "$FAILMARK")" = "$REMOTE" ]; then

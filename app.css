@@ -81,7 +81,6 @@ textarea:focus{outline:none;border-color:var(--gold)}
 .coin i{width:20px;height:20px;border:3px solid #5a3d16;border-radius:3px;opacity:.8}
 .coin.tails{background:radial-gradient(circle at 35% 30%,#d8cfc2,#8d8478 70%,#55504a)}
 .coin.tails i{border-color:#3d3833}
-.coin.spin{animation:spin .7s cubic-bezier(.3,.6,.4,1)}
 @keyframes spin{0%{transform:rotateX(0) translateY(0)}45%{transform:rotateX(900deg) translateY(-60px)}100%{transform:rotateX(1800deg) translateY(0)}}
 .cast-sum{text-align:center;color:var(--gold);min-height:24px;font-size:15px;margin-bottom:12px}
 .building{display:flex;flex-direction:column-reverse;gap:8px;width:150px;margin:0 auto 24px;min-height:136px;justify-content:flex-start}
@@ -127,4 +126,29 @@ textarea:focus{outline:none;border-color:var(--gold)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
 @media (min-width:700px){ body{background:#0c0a09} }
-@media (prefers-reduced-motion:reduce){ .coin.spin{animation:none} .screen{animation:none} }
+@media (prefers-reduced-motion:reduce){ .screen{animation:none} .think-orbit span{animation:none} }
+
+/* ── экран ожидания ── */
+.think-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:60vh;text-align:center;padding:20px 0}
+.think-orbit{position:relative;width:88px;height:88px;margin-bottom:32px}
+.think-orbit span{position:absolute;inset:0;border:2px solid transparent;border-radius:50%;
+  border-top-color:var(--gold);animation:orb 1.6s linear infinite}
+.think-orbit span:nth-child(2){inset:10px;border-top-color:var(--gold2);animation-duration:2.1s;animation-direction:reverse}
+.think-orbit span:nth-child(3){inset:20px;border-top-color:#8a6b3c;animation-duration:2.7s}
+@keyframes orb{to{transform:rotate(360deg)}}
+.think-phrase{font:500 19px/1.45 "Songti SC","Georgia",serif;min-height:3.2em;max-width:320px;
+  transition:opacity .26s ease;color:var(--ink)}
+.think-bar{width:180px;height:3px;background:var(--line);border-radius:2px;margin:28px 0 0;overflow:hidden}
+.think-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold2));
+  border-radius:2px;transition:width .12s linear}
+.think-note{color:var(--mute);font-size:12.5px;margin-top:16px;max-width:270px}
+
+/* ── предсказание одним текстом ── */
+.prediction{margin-top:18px}
+.prediction p{margin:0 0 15px;font-size:16.5px;line-height:1.62;color:#e9e0d2;
+  text-align:left;text-wrap:pretty}
+.prediction p:first-child{font-size:17px;color:var(--ink)}
+.prediction p:first-child::first-letter{font-size:1em}
+.prediction p:last-child{margin-bottom:0;color:var(--mute);font-size:15px;line-height:1.55;
+  border-top:1px solid var(--line);padding-top:14px;margin-top:20px}

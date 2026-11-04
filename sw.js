@@ -1,4 +1,4 @@
-const CACHE = "iching-v2";
+const CACHE = "iching-v3";
 const ASSETS = ["./", "index.html", "app.css", "app.js", "engine.js", "data.js", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS))); self.skipWaiting(); });
