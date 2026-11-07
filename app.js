@@ -1,7 +1,7 @@
 (function () {
   const $ = s => document.querySelector(s);
   const E = window.Engine;
-  const HEX = window.HEX, CATEGORIES = window.CATEGORIES;
+  const HEX = window.HEX;
   const LS_HIST = "iching.history.v1";
 
   /* ═══ НАСТРОЙКИ ОЖИДАНИЯ ═══
@@ -47,25 +47,6 @@
     go(prev, false);
   }
 
-  function renderDay() {
-    const r = E.dayHexagram(today());
-    $("#day-date").textContent = ruDate(today());
-    $("#day-hex").innerHTML = hexHTML(bitsToLines(r.primary.bits), "hex-mini");
-    $("#day-name").textContent = `${r.primary.n}. ${r.primary.ru}`;
-    $("#day-essence").textContent = r.primary.e;
-    $("#day-card").onclick = () => { state.category = "general"; state.question = "Гексаграмма дня"; showResult(r); };
-  }
-
-  function renderChips() {
-    $("#chips").innerHTML = CATEGORIES.map((c, i) => `<button class="chip" data-id="${c.id}"><i>${String(i + 1).padStart(2, "0")}</i>${c.label}</button>`).join("");
-    $("#chips").onclick = e => {
-      const b = e.target.closest(".chip"); if (!b) return;
-      state.category = b.dataset.id;
-      document.querySelectorAll(".chip").forEach(x => x.classList.toggle("on", x === b));
-      $("#btn-to-cast").disabled = false; buzz(8);
-    };
-  }
-
   /* Границы слов заданы явно: \b и \w в JS работают только с латиницей
      (\w = [A-Za-z0-9_]), поэтому для кириллицы нужен явный класс [а-яё]. */
   const BOUND_L = "(?:^|[^а-яёa-z0-9])";
@@ -103,12 +84,19 @@
     if (hit.fix) $("#coach-fix").onclick = () => { $("#q").value = hit.fix(raw); coach(); buzz(8); };
   }
 
-  const repeatKey = () => [today(), state.category, E.normalizeQuestion(state.question)].join("|");
+  /* Тема определяется по тексту вопроса. Пользователь её не выбирает. */
+  function detectCategory(question) {
+    const r = window.Topics.classify(question);
+    return r.id;
+  }
+
+  const repeatKey = () => [today(), E.normalizeQuestion(state.question)].join("|");
 
   const LS_DOB = "iching.dob";
 
   function startCast() {
     state.question = $("#q").value.trim();
+    state.category = detectCategory(state.question);
     state.dob = $("#dob").value || "";
     if (state.dob) localStorage.setItem(LS_DOB, state.dob); else localStorage.removeItem(LS_DOB);
     const prev = loadHist().find(h => h.key === repeatKey());
@@ -187,7 +175,6 @@
     const o = E.compose(r, state.category || "general");
     state.current = { r, o, q: state.question, cat: state.category };
     const p = r.primary, c = r.changed;
-    const cat = CATEGORIES.find(x => x.id === state.category);
     const hl = (r.rule.focus === "lines" && r.rule.of === "primary") ? r.rule.lines : [];
     const linesChanged = c ? bitsToLines(c.bits) : null;
 
@@ -197,7 +184,7 @@
     if (opt.repeat) html += `<div class="repeat">Вы уже задавали этот вопрос сегодня. Один вопрос — один ответ, вот он.</div>`;
 
     html += `<div class="res-head">
-      ${state.question ? `<div class="res-q">«${esc(state.question)}»${cat ? " · " + cat.label : ""}</div>` : cat ? `<div class="res-q">${cat.label}</div>` : ""}
+      ${state.question ? `<div class="res-q">«${esc(state.question)}»</div>` : ""}
       <div class="pair">
         <div class="col">${hexHTML(r.lines, "hex", hl)}<div class="cap">сейчас</div></div>
         ${c ? `<div class="arrow">→</div><div class="col">${hexHTML(linesChanged, "hex")}<div class="cap">развитие</div></div>` : ""}
@@ -227,13 +214,13 @@
     const h = loadHist();
     $("#history-list").innerHTML = h.length ? h.map((x, i) => `<button class="h-item" data-i="${i}">
         ${hexHTML(x.lines, "hex-mini")}
-        <div><div class="h-meta">${ruDate(x.date)} · ${(CATEGORIES.find(c => c.id === x.category) || {}).label || ""}</div>
+        <div><div class="h-meta">${ruDate(x.date)}</div>
         <div class="h-title">${x.primary}. ${HEX[x.primary].ru}${x.changed ? ` → ${x.changed}. ${HEX[x.changed].ru}` : ""}</div>
         ${x.question ? `<div class="h-q">${esc(x.question)}</div>` : ""}</div></button>`).join("")
       : `<div class="empty">Пока пусто. Задайте первый вопрос.</div>`;
     $("#history-list").onclick = e => {
       const b = e.target.closest(".h-item"); if (!b) return;
-      const x = h[+b.dataset.i]; state.category = x.category; state.question = x.question;
+      const x = h[+b.dataset.i]; state.question = x.question; state.category = detectCategory(x.question); state.dob = x.dob || "";
       showResult(E.cast({ lines: x.lines }));
     };
     go("s-history");
@@ -246,12 +233,18 @@
     $("#install-close").onclick = () => { $("#install-tip").hidden = true; localStorage.setItem("iching.tip", "1"); };
   }
 
-  $("#btn-start").onclick = () => { state.category = null; $("#q").value = ""; $("#coach").hidden = true;
-    $("#dob").max = today(); $("#dob").value = localStorage.getItem(LS_DOB) || "";
-    document.querySelectorAll(".chip").forEach(x => x.classList.remove("on")); $("#btn-to-cast").disabled = true; go("s-ask"); };
+  /* «Новый вопрос»: очищаем поле и возвращаемся на главную */
+  $("#btn-new").onclick = () => {
+    $("#q").value = ""; $("#coach").hidden = true;
+    state.question = ""; state.category = null;
+    $("#dob").max = today();
+    $("#dob").value = localStorage.getItem(LS_DOB) || "";
+    state.stack = ["s-home"];
+    go("s-home", false);
+    $("#q").focus();
+  };
   $("#q").addEventListener("input", coach);
   $("#btn-to-cast").onclick = startCast;
-  $("#btn-new").onclick = () => $("#btn-start").onclick();
   $("#btn-share").onclick = share;
   $("#btn-back").onclick = back;
   $("#btn-history").onclick = renderHistory;
@@ -259,6 +252,8 @@
   $("#btn-clear").onclick = () => { if (confirm("Удалить всю историю на этом устройстве?")) { localStorage.removeItem(LS_HIST); renderHistory(); } };
   $(".brand").onclick = () => { state.stack = ["s-home"]; go("s-home", false); };
 
-  renderDay(); renderChips(); installTip();
+  $("#dob").max = today();
+  $("#dob").value = localStorage.getItem(LS_DOB) || "";
+  installTip();
   if ("serviceWorker" in navigator && location.protocol !== "file:") navigator.serviceWorker.register("sw.js").catch(() => {});
 })();

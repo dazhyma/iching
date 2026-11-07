@@ -24,46 +24,28 @@
   </header>
 
   <section class="screen active" id="s-home">
-    <div class="day-card" id="day-card">
-      <div class="eyebrow">Гексаграмма дня · <span id="day-date"></span></div>
-      <div class="day-row">
-        <div class="hex-mini" id="day-hex"></div>
-        <div>
-          <div class="day-name" id="day-name"></div>
-          <div class="day-essence" id="day-essence"></div>
-        </div>
-      </div>
-      <div class="hint">Одна на всех сегодня. Для личного ответа задайте вопрос.</div>
-    </div>
-
     <h1 class="lead">Задайте вопрос<br>Книге перемен</h1>
-    <p class="sub">Сформулируйте, что вас волнует, и получите ответ Книги перемен.</p>
-    <button class="btn primary big" id="btn-start">Задать вопрос</button>
+    <p class="sub">Опишите своими словами, что вас волнует. Одна ситуация — один вопрос.</p>
+
+    <label class="field">
+      <span>Ваш вопрос</span>
+      <textarea id="q" rows="4" maxlength="300" placeholder="Например: что определит доход моего магазина в этом месяце?"></textarea>
+    </label>
+    <div class="coach" id="coach" hidden></div>
+
+    <label class="field">
+      <span>Дата рождения <i>(необязательно, остаётся на вашем устройстве)</i></span>
+      <input type="date" id="dob" min="1900-01-01">
+    </label>
+
+    <button class="btn primary big" id="btn-to-cast">Задать вопрос</button>
+    <p class="fine">Один вопрос — один ответ. Тот же вопрос в тот же день вернёт тот же ответ.</p>
 
     <div class="install" id="install-tip" hidden>
       <b>Установите на телефон.</b> В Safari нажмите <span class="share-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 14v6h14v-6"/></svg></span> «Поделиться» → «На экран Домой».
       <button class="link" id="install-close">Понятно</button>
     </div>
     <button class="link small" id="btn-method">Как мы читаем гексаграммы</button>
-  </section>
-
-  <section class="screen" id="s-ask">
-    <h2>О чём вопрос?</h2>
-    <div class="chips" id="chips"></div>
-
-    <label class="field">
-      <span>Ваш вопрос <i>(необязательно, но лучше точно)</i></span>
-      <textarea id="q" rows="3" maxlength="200" placeholder="Например: что определит доход моего магазина на этой неделе?"></textarea>
-    </label>
-    <div class="coach" id="coach" hidden></div>
-
-    <label class="field">
-      <span>Дата рождения <i>(необязательно, хранится только на вашем устройстве)</i></span>
-      <input type="date" id="dob" min="1900-01-01">
-    </label>
-
-    <button class="btn primary big" id="btn-to-cast" disabled>Получить предсказание</button>
-    <p class="fine">Один вопрос — один ответ. Повторный тот же вопрос в тот же день вернёт тот же ответ.</p>
   </section>
 
   <section class="screen" id="s-thinking">
@@ -113,6 +95,7 @@
 </div>
 <div class="toast" id="toast"></div>
 <script src="data.js"></script>
+<script src="topics.js"></script>
 <script src="lines.js"></script>
 <script src="engine.js"></script>
 <script src="app.js"></script>

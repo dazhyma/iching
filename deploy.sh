@@ -6,7 +6,7 @@ set -euo pipefail
 : "${HOST:?Укажите HOST — адрес сервера}"
 USER_SSH="${USER_SSH:-root}"
 DEST="${DEST:-/var/www/iching}"
-FILES="index.html app.css app.js engine.js data.js manifest.webmanifest sw.js README.md"
+FILES="index.html app.css app.js engine.js data.js lines.js topics.js manifest.webmanifest sw.js README.md"
 
 node test.js
 echo "→ загрузка на $USER_SSH@$HOST:$DEST"
