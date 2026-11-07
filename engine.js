@@ -2,6 +2,7 @@
 (function (root) {
   const D = (typeof module !== "undefined") ? require("./data.js") : root;
   const { TRIGRAMS, KING_WEN, HEX, CATEGORY_FRAME, VALENCE } = D;
+  const LINES = (typeof module !== "undefined") ? require("./lines.js") : root.LINES;
 
   function randomCoin() {
     const b = new Uint8Array(1);
@@ -99,10 +100,11 @@
 
     if (rule.focus === "lines") {
       const src = rule.of === "changed" ? changed : primary;
+      const authored = LINES && LINES[src.n];
       out.lines = rule.lines.map(p => ({
         pos: p, main: p === rule.main, from: src.ru,
-        text: (src.lines && src.lines[p]) || POSITION[p],
-        custom: !!(src.lines && src.lines[p])       // true = авторский текст, false = заглушка по позиции
+        text: (authored && authored[p - 1]) || POSITION[p],
+        custom: !!(authored && authored[p - 1])       // true = авторский текст, false = заглушка по позиции
       }));
     }
     if (changed) {
