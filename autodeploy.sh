@@ -36,7 +36,7 @@ fi
 rm -f "$FAILMARK"
 
 install -d -o caddy -g caddy "$DEST/icons"
-for f in index.html app.css app.js engine.js data.js lines.js topics.js manifest.webmanifest sw.js; do
+for f in index.html app.css app.js engine.js data.js lines.js topics.js subject.js manifest.webmanifest sw.js; do
   install -m 644 -o caddy -g caddy "$SRC/$f" "$DEST/$f"
 done
 cp -f "$SRC"/icons/* "$DEST/icons/"

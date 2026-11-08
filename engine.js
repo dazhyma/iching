@@ -3,6 +3,7 @@
   const D = (typeof module !== "undefined") ? require("./data.js") : root;
   const { TRIGRAMS, KING_WEN, HEX, CATEGORY_FRAME, VALENCE } = D;
   const LINES = (typeof module !== "undefined") ? require("./lines.js") : root.LINES;
+  const SUBJ = (typeof module !== "undefined") ? require("./subject.js") : root.Subject;
 
   function randomCoin() {
     const b = new Uint8Array(1);
@@ -88,6 +89,9 @@
 
   /* Сборка в один связный текст. Возвращает абзацы, а не поля-блоки. */
   function compose(result, category, opts = {}) {
+    /* Предмет — о ком или о чём спросили. Нужен, чтобы ответ говорил
+       про детей, а не про «период вообще». */
+    const subj = opts.question && SUBJ ? SUBJ.extract(opts.question) : null;
     const { primary, changed, rule } = result;
     const base = (rule.of === "changed" && changed) ? changed : primary;
     const v = base.v;
@@ -97,7 +101,8 @@
     const out = {
       valence: VALENCE[v], essence: base.e, situation: base.t, advice: base.a,
       category: frame[v], lines: [], development: null, rule: rule.text,
-      name: base.ru, num: base.n, paragraphs: []
+      name: base.ru, num: base.n, paragraphs: [],
+      subject: subj ? subj.phrase : null, subjectKey: subj ? subj.key : null
     };
 
     if (rule.focus === "lines") {
@@ -138,8 +143,19 @@
 
     // 4. Категория: фраза уже имеет собственное подлежащее («В работе…», «По деньгам…»),
     //    поэтому вставляется отдельным абзацем — иначе получается «По деньгам, в денежных делах».
-    if (category && frame[v]) P.push(frame[v]);
-    else if (frame[v]) P.push(frame[v]);
+    /* Фраза категории. Если понятно, о чём спросили, называем это прямо:
+       человек должен узнать свой вопрос в ответе. */
+    const catLine = frame[v];
+    if (subj && catLine) {
+      const LEAD = [
+        `Про ${subj.phrase} это читается так.`,
+        `Если держать в уме ${subj.phrase}, картина такая.`,
+        `Применительно к тому, о чём вы спросили — ${subj.phrase}.`
+      ];
+      P.push(`${pick(LEAD, seed + 3)} ${catLine}`);
+    } else if (catLine) {
+      P.push(catLine);
+    }
 
     // 5. Развитие
     if (out.development) P.push(`${pick(LINK.dev, seed + 1)} ${out.development.text}`);
