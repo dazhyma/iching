@@ -48,7 +48,7 @@ if ! "$SRC/check.sh" "$SRC" >"$LOG" 2>&1; then
 fi
 
 install -d -o caddy -g caddy "$DEST/icons"
-for f in index.html app.css app.js engine.js data.js lines.js fuzzy.js topics.js typo.js subject.js intent.js profiles.js manifest.webmanifest sw.js; do
+for f in index.html app.css app.js engine.js data.js lines.js topics.js typo.js subject.js intent.js profiles.js manifest.webmanifest sw.js; do
   install -m 644 -o caddy -g caddy "$SRC/$f" "$DEST/$f"
 done
 cp -f "$SRC"/icons/* "$DEST/icons/"
