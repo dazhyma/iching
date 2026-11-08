@@ -172,7 +172,10 @@
 
   /* ---------- результат одним текстом ---------- */
   function showResult(r, opt = {}) {
-    const o = E.compose(r, state.category || "general", { question: state.question });
+    const o = E.compose(r, state.category || "general", {
+      question: state.question,
+      intent: window.Intent ? window.Intent.detect(state.question) : null
+    });
     state.current = { r, o, q: state.question, cat: state.category };
     const p = r.primary, c = r.changed;
     const hl = (r.rule.focus === "lines" && r.rule.of === "primary") ? r.rule.lines : [];

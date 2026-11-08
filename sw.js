@@ -3,9 +3,9 @@
    Иначе после правок пользователь видит старую версию и не понимает почему.
    Картинки и шрифты — из кэша: они не меняются и грузятся мгновенно. */
 
-const CACHE = "iching-v13";
+const CACHE = "iching-v14";
 const ASSETS = ["./", "fonts/Jura.ttf", "fonts/Manrope.ttf", "index.html", "app.css", "app.js",
-  "engine.js", "data.js", "lines.js", "topics.js", "subject.js", "manifest.webmanifest",
+  "engine.js", "data.js", "lines.js", "topics.js", "subject.js", "intent.js", "profiles.js", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
 
 const NETWORK_FIRST = /(\/|\.html|\.js|\.css|\.webmanifest)$/;

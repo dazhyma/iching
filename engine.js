@@ -4,6 +4,8 @@
   const { TRIGRAMS, KING_WEN, HEX, CATEGORY_FRAME, VALENCE } = D;
   const LINES = (typeof module !== "undefined") ? require("./lines.js") : root.LINES;
   const SUBJ = (typeof module !== "undefined") ? require("./subject.js") : root.Subject;
+  const PROFILES = (typeof module !== "undefined") ? require("./profiles.js") : root.Profiles;
+  const INTENT = (typeof module !== "undefined") ? require("./intent.js") : root.Intent;
 
   function randomCoin() {
     const b = new Uint8Array(1);
@@ -121,59 +123,82 @@
       };
     }
 
-    /* --- абзацы --- */
+    /* --- абзацы ---
+       Логика ответа, а не структура гексаграммы:
+       сначала о чём спросили, потом знак, потом что делать. */
+
+    const prof = PROFILES && PROFILES.TOPIC[category];
+    const it = (opts.intent && opts.intent.id) || (INTENT && opts.question ? INTENT.detect(opts.question).id : "outcome");
     const P = [];
+    const about = subj ? `Про ${subj.phrase}. ` : "";
 
-    // 1. Открытие: что выпало и как это звучит одним движением
-    P.push(`${out.essence} Вам выпала гексаграмма ${out.num}, «${out.name}»${changed ? `, и она переходит в «${changed.ru}»` : ""} — это ответ не про то, что случится само, а про то, как устроен ваш момент и куда он клонится.`);
+    /* 1. Знак — одной фразой, без рассуждений о природе И-Цзин. */
+    P.push(`${out.essence} Гексаграмма ${out.num}, «${out.name}»${changed ? `, с переходом в «${changed.ru}»` : ""}.`);
 
-    // 2. Ситуация
+    /* 2. О чём этот вопрос по существу. Сразу привязывает ответ
+       к теме человека, а не к общим словам. */
+    if (prof) P.push(about + prof.stake);
+
+    /* 3. Ситуация по гексаграмме. */
     P.push(out.situation);
 
-    // 3. Линии — ядро ответа. Вступление ко второй линии звучит только если она есть.
+    /* 4. Линии — ядро расклада. */
     if (rule.focus === "lines" && out.lines.length) {
       const first = out.lines.find(l => l.main) || out.lines[0];
       P.push(`${pick(LINK.line, seed)} ${first.text}`);
-      const rest = out.lines.filter(l => l !== first);
-      rest.forEach((l, i) => {
+      out.lines.filter(l => l !== first).forEach((l, i) => {
         const lead = i === 0 ? pick(LINK.second, seed + l.pos) : pick(LINK.line, seed + l.pos + 5);
         P.push(`${lead} ${l.text}`);
       });
     }
 
-    // 4. Категория: фраза уже имеет собственное подлежащее («В работе…», «По деньгам…»),
-    //    поэтому вставляется отдельным абзацем — иначе получается «По деньгам, в денежных делах».
-    /* Фраза категории. Если понятно, о чём спросили, называем это прямо:
-       человек должен узнать свой вопрос в ответе. */
-    const catLine = frame[v];
-    if (subj && catLine) {
-      const LEAD = [
-        `Про ${subj.phrase} это читается так.`,
-        `Если держать в уме ${subj.phrase}, картина такая.`,
-        `Применительно к тому, о чём вы спросили — ${subj.phrase}.`
-      ];
-      P.push(`${pick(LEAD, seed + 3)} ${catLine}`);
-    } else if (catLine) {
-      P.push(catLine);
+    /* 5. Прямой ответ — в той форме, в какой задан вопрос. */
+    if (prof) {
+      if (it === "yesno" && prof.yes) {
+        P.push(`${pick(PROFILES.VERDICT_LEAD, seed)} ${prof.yes[v]}`);
+      } else if (it === "timing") {
+        P.push(`О сроках. ${prof.pace}`);
+      } else if (it === "why") {
+        P.push(prof.lever);
+      } else if (it === "choice") {
+        P.push(`${prof.lever} Если решать по этому признаку, знак ${out.valence.label.toLowerCase()}.`);
+      } else if (it === "how") {
+        P.push(v === "f" ? prof.f : v === "m" ? prof.m : prof.c);
+      }
+      /* для «что будет» отдельного блока нет: ответ даёт абзац про
+         что определяет исход ниже — он и есть прогноз. */
     }
 
-    // 5. Развитие
+    /* 6. Что определяет исход. Для общего вопроса — самое полезное. */
+    if (prof && it !== "why" && it !== "choice") {
+      P.push(`${pick(PROFILES.LEVER_LEAD, seed + 2)} ${prof.lever}`);
+    }
+
+    /* 7. Что делать — по знаку гексаграммы. */
+    if (prof) P.push(v === "f" ? prof.f : v === "m" ? prof.m : prof.c);
+
+    /* 8. Развитие. */
     if (out.development) P.push(`${pick(LINK.dev, seed + 1)} ${out.development.text}`);
 
-    // 6. Совет
-    P.push(`${pick(LINK.advice, seed + 2)} ${out.advice}`);
+    /* 9. Совет из самой гексаграммы. */
+    P.push(`${pick(LINK.advice, seed + 3)} ${out.advice}`);
 
-    // 7. Закрытие: рамка ожиданий, снимает фатализм
+    /* 10. Сроки, если их не назвали выше. */
+    if (prof && it !== "timing") P.push(`По срокам. ${prof.pace}`);
+
+    /* 11. Закрытие. */
     P.push(pick(LINK.close, seed + 4));
 
-    // убираем дословные повторы: один и тот же текст не должен идти дважды
+    /* убираем дословные повторы: один и тот же текст не должен идти дважды */
     const seen = new Set();
     out.paragraphs = P.filter(p => {
+      if (!p || !p.trim()) return false;
       const key = p.trim().toLowerCase().slice(0, 60);
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
     });
+
     out.text = out.paragraphs.join("\n\n");
     return out;
   }
