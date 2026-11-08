@@ -35,6 +35,16 @@ if ! node test.js >"$LOG" 2>&1; then
 fi
 rm -f "$FAILMARK"
 
+# ── защита от расхождения версий ──
+# Пользователь видит версию в левом нижнем углу. Если она не совпадает
+# с номером кэша, он не поймёт, обновилась ли страница.
+APP_VER=$(sed -n 's/.*id="app-version"[^>]*>\([^<]*\)<.*/\1/p' "$SRC/index.html" | head -1)
+CACHE_VER=$(sed -n 's/.*CACHE = "iching-\([^"]*\)".*/\1/p' "$SRC/sw.js" | head -1)
+if [ -n "$APP_VER" ] && [ -n "$CACHE_VER" ] && [ "$APP_VER" != "$CACHE_VER" ]; then
+  echo "[$(date -Is)] версии расходятся: на странице $APP_VER, в кэше $CACHE_VER — деплой отменён"
+  exit 1
+fi
+
 install -d -o caddy -g caddy "$DEST/icons"
 for f in index.html app.css app.js engine.js data.js lines.js topics.js subject.js intent.js profiles.js manifest.webmanifest sw.js; do
   install -m 644 -o caddy -g caddy "$SRC/$f" "$DEST/$f"
