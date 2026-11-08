@@ -95,8 +95,21 @@
   const LS_DOB = "iching.dob";
 
   function startCast() {
-    state.question = $("#q").value.trim();
-    state.category = detectCategory(state.question);
+    /* Опечатки: тема и тип вопроса определяются по исправленному тексту,
+       но сам вопрос в истории и в шапке ответа остаётся таким, как введён. */
+    const typed = $("#q").value.trim();
+    const warn = window.Typo ? window.Typo.suspicious(typed) : null;
+    if (warn && !window.__typoAck) {
+      const box = $("#coach");
+      box.hidden = false;
+      box.innerHTML = `<b>Проверьте:</b> ${warn}<button class="link" id="coach-go">Всё равно продолжить</button>`;
+      $("#coach-go").onclick = () => { window.__typoAck = true; startCast(); };
+      return;
+    }
+    window.__typoAck = false;
+    state.question = typed;
+    state.typoFixed = window.Typo ? window.Typo.correct(typed).text : typed;
+    state.category = detectCategory(state.typoFixed || state.question);
     state.dob = $("#dob").value || "";
     if (state.dob) localStorage.setItem(LS_DOB, state.dob); else localStorage.removeItem(LS_DOB);
     const prev = loadHist().find(h => h.key === repeatKey());
@@ -174,7 +187,7 @@
   function showResult(r, opt = {}) {
     const o = E.compose(r, state.category || "general", {
       question: state.question,
-      intent: window.Intent ? window.Intent.detect(state.question) : null
+      intent: window.Intent ? window.Intent.detect(state.typoFixed || state.question) : null
     });
     state.current = { r, o, q: state.question, cat: state.category };
     const p = r.primary, c = r.changed;
